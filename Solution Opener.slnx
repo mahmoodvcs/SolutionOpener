@@ -1,3 +1,9 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="POWER_USER_TIPS.md" />
+    <File Path="QUICK_REFERENCE.md" />
+    <File Path="README.md" />
+    <File Path="USER_GUIDE.md" />
+  </Folder>
   <Project Path="Solution Opener/Solution Opener.csproj" />
 </Solution>
