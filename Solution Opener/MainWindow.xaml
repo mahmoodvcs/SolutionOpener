@@ -137,7 +137,8 @@
                     Style="{StaticResource ModernTabControlStyle}"
                     ItemsSource="{Binding RepositoryTabs}"
                     SelectedItem="{Binding SelectedTab}"
-                    BorderThickness="0">
+                    BorderThickness="0"
+                    PreviewKeyDown="TabControl_PreviewKeyDown">
             
             <TabControl.ItemContainerStyle>
                 <Style TargetType="TabItem" BasedOn="{StaticResource ModernTabItemStyle}">

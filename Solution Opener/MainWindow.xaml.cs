@@ -75,6 +75,78 @@ namespace Solution_Opener
             }
         }
 
+        private void TabControl_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Down)
+            {
+                // Only handle if the focused element is a TabItem (not already in the grid)
+                var focusedElement = Keyboard.FocusedElement as DependencyObject;
+                var tabItem = FindParent<TabItem>(focusedElement);
+                
+                // If focus is not on a TabItem, don't handle the event (let the grid handle it)
+                if (tabItem == null)
+                    return;
+                
+                var tabControl = sender as TabControl;
+                if (tabControl?.SelectedItem != null)
+                {
+                    // The content is wrapped in a ContentPresenter
+                    var contentPresenter = FindVisualChild<ContentPresenter>(tabControl);
+                    if (contentPresenter != null)
+                    {
+                        // Now find the DataGrid inside the content presenter
+                        var dataGrid = FindVisualChild<DataGrid>(contentPresenter);
+                        if (dataGrid != null && dataGrid.Items.Count > 0)
+                        {
+                            dataGrid.Focus();
+                            
+                            // Select the first item if nothing is selected
+                            if (dataGrid.SelectedIndex == -1)
+                            {
+                                dataGrid.SelectedIndex = 0;
+                            }
+                            
+                            // Update layout to ensure the item is rendered
+                            dataGrid.UpdateLayout();
+                            
+                            // Scroll the selected item into view and focus it
+                            if (dataGrid.SelectedItem != null)
+                            {
+                                dataGrid.ScrollIntoView(dataGrid.SelectedItem);
+                                
+                                // Try to focus the row
+                                dataGrid.Dispatcher.BeginInvoke(new Action(() =>
+                                {
+                                    var row = (DataGridRow)dataGrid.ItemContainerGenerator.ContainerFromIndex(dataGrid.SelectedIndex);
+                                    if (row != null)
+                                    {
+                                        row.MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+                                    }
+                                }), System.Windows.Threading.DispatcherPriority.Background);
+                            }
+                            
+                            e.Handled = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        private T? FindParent<T>(DependencyObject child) where T : DependencyObject
+        {
+            if (child == null)
+                return null;
+
+            var parent = System.Windows.Media.VisualTreeHelper.GetParent(child);
+            
+            if (parent is T typedParent)
+            {
+                return typedParent;
+            }
+            
+            return FindParent<T>(parent);
+        }
+
         private T? FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
         {
             if (parent == null)
