@@ -74,7 +74,7 @@ public partial class MainWindowViewModel : ObservableObject
 
     private void AddFavoritesTab()
     {
-        var favRepo = new RepositoryInfo { Name = "? Favorites", Path = "favorites" };
+        var favRepo = new RepositoryInfo { Name = "Favorites", Path = "favorites" };
         var favTab = new RepositoryTabViewModel(favRepo);
 
         // Collect all favorite solutions from all repositories

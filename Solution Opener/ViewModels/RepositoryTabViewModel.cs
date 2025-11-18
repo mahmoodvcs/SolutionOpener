@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Solution_Opener.Models;
 
@@ -11,6 +11,9 @@ public partial class RepositoryTabViewModel : ObservableObject
 
     [ObservableProperty]
     private string _path;
+
+    [ObservableProperty]
+    private string _icon;
 
     [ObservableProperty]
     private ObservableCollection<SolutionItemViewModel> _solutions;
@@ -30,6 +33,7 @@ public partial class RepositoryTabViewModel : ObservableObject
     {
         _name = repositoryInfo.Name;
         _path = repositoryInfo.Path;
+        _icon = repositoryInfo.Path == "favorites" ? "⭐" : "📂";
         _solutions = new ObservableCollection<SolutionItemViewModel>();
         _filteredSolutions = new ObservableCollection<SolutionItemViewModel>();
         _statusText = "Ready";

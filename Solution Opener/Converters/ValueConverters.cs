@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
@@ -53,7 +53,7 @@ public class BoolToStarConverter : IValueConverter
     {
         if (value is bool boolValue && boolValue)
         {
-            return "?";
+            return "⭐";
         }
         return "";
     }
@@ -80,3 +80,4 @@ public class ZeroToVisibilityConverter : IValueConverter
         throw new NotImplementedException();
     }
 }
+    
