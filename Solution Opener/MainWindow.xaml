@@ -252,7 +252,8 @@
                                   SelectionUnit="FullRow"
                                   GridLinesVisibility="Horizontal"
                                   HeadersVisibility="Column"
-                                  RowHeight="32">
+                                  RowHeight="32"
+                                  IsReadOnly="True">
                             
                             <DataGrid.Style>
                                 <Style TargetType="DataGrid" BasedOn="{StaticResource ModernDataGridStyle}">
