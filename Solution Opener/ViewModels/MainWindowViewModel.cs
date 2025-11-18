@@ -74,17 +74,11 @@ public partial class MainWindowViewModel : ObservableObject
 
     private void AddFavoritesTab()
     {
-        var favRepo = new RepositoryInfo { Name = "Favorites", Path = "favorites" };
-        var favTab = new RepositoryTabViewModel(favRepo);
+        var quickAccessRepo = new RepositoryInfo { Name = "Quick Access", Path = "quick-access" };
+        var quickAccessTab = new RepositoryTabViewModel(quickAccessRepo);
 
-        // Collect all favorite solutions from all repositories
-        var favoriteSolutions = _configuration.Repositories
-            .SelectMany(r => r.Solutions)
-            .Where(s => _configuration.FavoriteSolutionPaths.Contains(s.FullPath))
-            .ToList();
-
-        favTab.UpdateSolutions(favoriteSolutions, _configuration.FavoriteSolutionPaths);
-        RepositoryTabs.Add(favTab);
+        RefreshQuickAccessTab(quickAccessTab);
+        RepositoryTabs.Add(quickAccessTab);
     }
 
     [RelayCommand]
@@ -139,7 +133,7 @@ public partial class MainWindowViewModel : ObservableObject
             var tabVm = new RepositoryTabViewModel(repo);
             tabVm.UpdateSolutions(solutions, _configuration.FavoriteSolutionPaths);
 
-            // Insert before Favorites tab
+            // Insert before Quick Access tab
             var favTabIndex = RepositoryTabs.Count - 1;
             RepositoryTabs.Insert(favTabIndex, tabVm);
 
@@ -161,7 +155,7 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand]
     private async Task RefreshCurrentRepositoryAsync()
     {
-        if (SelectedTab == null || SelectedTab.Path == "favorites")
+        if (SelectedTab == null || SelectedTab.Path == "quick-access")
             return;
 
         var repo = _configuration.Repositories.FirstOrDefault(r => r.Path == SelectedTab.Path);
@@ -209,6 +203,10 @@ public partial class MainWindowViewModel : ObservableObject
         {
             _launcherService.OpenSolution(solution.FullPath);
             _recentService.AddRecentSolution(solution.FullPath, _configuration);
+            
+            // Refresh Quick Access tab to show the newly opened solution
+            RefreshQuickAccessTab();
+            
             StatusBarText = $"Opened {solution.Name}";
         }
         catch (Exception ex)
@@ -262,7 +260,7 @@ public partial class MainWindowViewModel : ObservableObject
         _recentService.ToggleFavorite(solution.FullPath, _configuration);
         solution.IsFavorite = !solution.IsFavorite;
 
-        RefreshFavoritesTab();
+        RefreshQuickAccessTab();
         StatusBarText = solution.IsFavorite ? "Added to favorites" : "Removed from favorites";
     }
 
@@ -275,7 +273,7 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand]
     private void RemoveRepository(RepositoryTabViewModel? tab)
     {
-        if (tab == null || tab.Path == "favorites")
+        if (tab == null || tab.Path == "quick-access")
             return;
 
         var result = MessageBox.Show(
@@ -331,16 +329,55 @@ public partial class MainWindowViewModel : ObservableObject
 
     private void RefreshFavoritesTab()
     {
-        var favTab = RepositoryTabs.LastOrDefault();
-        if (favTab?.Path == "favorites")
+        RefreshQuickAccessTab();
+    }
+
+    private void RefreshQuickAccessTab(RepositoryTabViewModel? quickAccessTab = null)
+    {
+        quickAccessTab ??= RepositoryTabs.LastOrDefault();
+        
+        if (quickAccessTab?.Path == "quick-access")
         {
-            var favoriteSolutions = _configuration.Repositories
-                .SelectMany(r => r.Solutions)
-                .Where(s => _configuration.FavoriteSolutionPaths.Contains(s.FullPath))
+            // Create a dictionary to lookup repository name by solution path
+            var solutionToRepo = new Dictionary<string, string>();
+            foreach (var repo in _configuration.Repositories)
+            {
+                foreach (var solution in repo.Solutions)
+                {
+                    solutionToRepo[solution.FullPath] = repo.Name;
+                }
+            }
+
+            // Get recent solutions (up to 10 most recent) with repository names
+            var recentSolutions = _configuration.RecentSolutionPaths
+                .Take(10)
+                .Select(path =>
+                {
+                    var solution = _configuration.Repositories
+                        .SelectMany(r => r.Solutions)
+                        .FirstOrDefault(s => s.FullPath == path);
+                    
+                    if (solution != null && solutionToRepo.TryGetValue(path, out var repoName))
+                    {
+                        return (solution, repoName);
+                    }
+                    return (solution: null, repoName: string.Empty);
+                })
+                .Where(x => x.solution != null)
                 .ToList();
 
-            favTab.UpdateSolutions(favoriteSolutions, _configuration.FavoriteSolutionPaths);
-            favTab.ApplyFilter(SearchText);
+            // Get favorite solutions with repository names
+            var favoriteSolutions = _configuration.Repositories
+                .SelectMany(r => r.Solutions
+                    .Where(s => _configuration.FavoriteSolutionPaths.Contains(s.FullPath))
+                    .Select(s => (solution: s, repoName: r.Name)))
+                .ToList();
+
+            quickAccessTab.UpdateQuickAccessSolutions(
+                recentSolutions.Select(x => (x.solution!, x.repoName)).ToList(),
+                favoriteSolutions,
+                _configuration.FavoriteSolutionPaths);
+            quickAccessTab.ApplyFilter(SearchText);
         }
     }
 
@@ -355,7 +392,7 @@ public partial class MainWindowViewModel : ObservableObject
             return;
         }
 
-        var totalSolutions = RepositoryTabs.Where(t => t.Path != "favorites")
+        var totalSolutions = RepositoryTabs.Where(t => t.Path != "quick-access")
             .Sum(t => t.Solutions.Count);
 
         var filteredCount = SelectedTab.FilteredSolutions.Count;

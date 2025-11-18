@@ -11,6 +11,7 @@
         <converters:NotEmptyStringConverter x:Key="NotEmptyStringConverter"/>
         <converters:BoolToStarConverter x:Key="BoolToStarConverter"/>
         <converters:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter"/>
+        <converters:QuickAccessColumnWidthConverter x:Key="QuickAccessColumnWidthConverter"/>
 
         <!-- Modern Color Palette - Enhanced with beautiful gradient colors -->
         <SolidColorBrush x:Key="PrimaryBrush" Color="#6C5CE7"/>

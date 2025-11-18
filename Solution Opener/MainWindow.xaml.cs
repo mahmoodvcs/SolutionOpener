@@ -226,9 +226,47 @@ namespace Solution_Opener
             ViewModel.SaveWindowSettings(settings);
         }
 
-		private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
-		{
-			//switch tabs with Ctrl+1 to Ctrl+9
+        private void SolutionsDataGrid_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Handle Repository column visibility based on IsQuickAccess
+            if (sender is DataGrid grid && grid.DataContext is RepositoryTabViewModel vm)
+            {
+                if (grid.Columns.Count > 1)
+                {
+                    var repoColumn = grid.Columns[1]; // Repository column (after Status Icon column)
+                    
+                    // Set width: 1.5* for Quick Access, 0 for others
+                    repoColumn.Width = vm.IsQuickAccess 
+                        ? new DataGridLength(1.5, DataGridLengthUnitType.Star) 
+                        : new DataGridLength(0);
+                }
+            }
+        }
+
+        private void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Update Repository column visibility when tab changes
+            if (sender is TabControl tabControl && tabControl.SelectedItem is RepositoryTabViewModel vm)
+            {
+                // Find the DataGrid in the current tab's content
+                var contentPresenter = FindVisualChild<ContentPresenter>(tabControl);
+                if (contentPresenter != null)
+                {
+                    var dataGrid = FindVisualChild<DataGrid>(contentPresenter);
+                    if (dataGrid != null && dataGrid.Columns.Count > 1)
+                    {
+                        var repoColumn = dataGrid.Columns[1]; // Repository column
+                        repoColumn.Width = vm.IsQuickAccess 
+                            ? new DataGridLength(1.5, DataGridLengthUnitType.Star) 
+                            : new DataGridLength(0);
+                    }
+                }
+            }
+        }
+
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            //switch tabs with Ctrl+1 to Ctrl+9
             if (e.KeyboardDevice.Modifiers == ModifierKeys.Control)
             {
                 if (e.Key >= Key.D1 && e.Key <= Key.D9)
@@ -243,7 +281,7 @@ namespace Solution_Opener
                         e.Handled = true;
                     }
                 }
-			}
-		}
-	}
+            }
+        }
+    }
 }

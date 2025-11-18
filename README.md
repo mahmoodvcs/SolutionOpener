@@ -98,13 +98,40 @@ Click any column header to sort by:
 3. A star (⭐) appears
 
 **View Favorites:**
-- Click the "⭐ Favorites" tab
+- Click the "⚡ Quick Access" tab
 - All favorites shown together, regardless of repository
 
 **What to favorite:**
 - Solutions you open daily
 - Main entry-point solutions
 - Frequently debugged solutions
+
+---
+
+## 🕒 Quick Access Tab
+
+The **Quick Access** tab combines both recent and favorite solutions in one convenient location:
+
+**Recent Solutions (🕒):**
+- Shows the 10 most recently opened solutions
+- Automatically updated when you open any solution
+- Displayed at the top of the Quick Access tab
+
+**Favorite Solutions (⭐):**
+- Shows all your favorited solutions
+- Displayed below recent solutions
+- Solutions that are both recent AND favorite will show with a clock icon (🕒)
+
+**Repository Column:**
+- The Quick Access tab includes a **Repository** column showing which repository each solution belongs to
+- This helps you quickly identify solutions across multiple repositories
+- The column is only visible in the Quick Access tab
+
+**Why Quick Access?**
+- One-stop access to frequently/recently used solutions
+- No need to remember which repository contains the solution
+- Fastest way to reopen solutions you're actively working on
+- See all your important solutions in one place, regardless of repository
 
 ---
 
@@ -129,7 +156,8 @@ Click any column header to sort by:
 **What's saved:**
 - Repository paths and discovered solutions (cached)
 - Window size, position, maximized state
-- Favorite and recent solution paths (last 20)
+- Favorite solution paths
+- Recent solution paths (last 10 most recently opened)
 
 **Automatic Backup:** `config.json.bak` created on every save
 

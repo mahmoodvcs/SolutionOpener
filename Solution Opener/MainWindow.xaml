@@ -139,6 +139,7 @@
                     Style="{StaticResource ModernTabControlStyle}"
                     ItemsSource="{Binding RepositoryTabs}"
                     SelectedItem="{Binding SelectedTab}"
+                    SelectionChanged="MainTabControl_SelectionChanged"
                     BorderThickness="0"
                     PreviewKeyDown="TabControl_PreviewKeyDown">
             
@@ -248,6 +249,7 @@
                         <!-- Solutions List -->
                         <DataGrid x:Name="SolutionsDataGrid"
                                   ItemsSource="{Binding FilteredSolutions}"
+                                  Loaded="SolutionsDataGrid_Loaded"
                                   Margin="20"
                                   CanUserSortColumns="True"
                                   AutoGenerateColumns="False"
@@ -324,13 +326,26 @@
 
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="" 
-                                                   Binding="{Binding IsFavorite, Converter={StaticResource BoolToStarConverter}}"
+                                                   Binding="{Binding StatusIcon}"
                                                    Width="50"
                                                    CanUserSort="True">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="FontSize" Value="18"/>
                                             <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                                
+                                <!-- Repository Column - Only visible in Quick Access tab -->
+                                <DataGridTextColumn Header="Repository" 
+                                                   Binding="{Binding RepositoryName}" 
+                                                   CanUserSort="True">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontSize" Value="13"/>
+                                            <Setter Property="FontWeight" Value="Medium"/>
+                                            <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
                                         </Style>
                                     </DataGridTextColumn.ElementStyle>
                                 </DataGridTextColumn>
@@ -348,6 +363,8 @@
                                     </DataGridTextColumn.ElementStyle>
                                 </DataGridTextColumn>
                                 
+
+
                                 <DataGridTextColumn Header="Path" 
                                                    Binding="{Binding RelativePath}" 
                                                    Width="3*"
@@ -356,29 +373,6 @@
                                         <Style TargetType="TextBlock">
                                             <Setter Property="FontFamily" Value="Consolas"/>
                                             <Setter Property="FontSize" Value="13"/>
-                                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
-                                        </Style>
-                                    </DataGridTextColumn.ElementStyle>
-                                </DataGridTextColumn>
-                                
-                                <DataGridTextColumn Header="Modified" 
-                                                   Binding="{Binding LastModifiedDisplay}" 
-                                                   Width="1*"
-                                                   CanUserSort="True">
-                                    <DataGridTextColumn.ElementStyle>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
-                                        </Style>
-                                    </DataGridTextColumn.ElementStyle>
-                                </DataGridTextColumn>
-                                
-                                <DataGridTextColumn Header="Size" 
-                                                   Binding="{Binding FileSizeDisplay}" 
-                                                   Width="100"
-                                                   CanUserSort="True">
-                                    <DataGridTextColumn.ElementStyle>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="HorizontalAlignment" Value="Right"/>
                                             <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
                                         </Style>
                                     </DataGridTextColumn.ElementStyle>
@@ -404,6 +398,7 @@
                                 </Canvas>
                             </Viewbox>
                             
+
                             <TextBlock Text="No solutions found" 
                                       FontSize="26" 
                                       FontWeight="SemiBold"

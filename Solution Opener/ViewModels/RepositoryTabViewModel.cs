@@ -33,11 +33,14 @@ public partial class RepositoryTabViewModel : ObservableObject
     {
         _name = repositoryInfo.Name;
         _path = repositoryInfo.Path;
-        _icon = repositoryInfo.Path == "favorites" ? "⭐" : "📂";
+        _icon = repositoryInfo.Path == "quick-access" ? "⚡" : 
+                repositoryInfo.Path == "favorites" ? "⭐" : "📂";
         _solutions = new ObservableCollection<SolutionItemViewModel>();
         _filteredSolutions = new ObservableCollection<SolutionItemViewModel>();
         _statusText = "Ready";
     }
+
+    public bool IsQuickAccess => _path == "quick-access";
 
     public void UpdateSolutions(List<SolutionInfo> solutions, List<string> favoritePaths)
     {
@@ -47,6 +50,34 @@ public partial class RepositoryTabViewModel : ObservableObject
         {
             var isFavorite = favoritePaths.Contains(solution.FullPath);
             Solutions.Add(new SolutionItemViewModel(solution, isFavorite));
+        }
+
+        ApplyFilter(_currentSearchText);
+        UpdateStatus();
+    }
+
+    public void UpdateQuickAccessSolutions(
+        List<(SolutionInfo solution, string repoName)> recentSolutions,
+        List<(SolutionInfo solution, string repoName)> favoriteSolutions,
+        List<string> favoritePaths)
+    {
+        Solutions.Clear();
+        
+        // Add recent solutions first (maintaining order) with isRecent flag and repo name
+        foreach (var (solution, repoName) in recentSolutions)
+        {
+            var isFavorite = favoritePaths.Contains(solution.FullPath);
+            Solutions.Add(new SolutionItemViewModel(solution, isFavorite, isRecent: true, repositoryName: repoName));
+        }
+        
+        // Add favorites that aren't already in recent
+        var recentPaths = recentSolutions.Select(x => x.solution.FullPath).ToHashSet();
+        foreach (var (solution, repoName) in favoriteSolutions)
+        {
+            if (!recentPaths.Contains(solution.FullPath))
+            {
+                Solutions.Add(new SolutionItemViewModel(solution, isFavorite: true, isRecent: false, repositoryName: repoName));
+            }
         }
 
         ApplyFilter(_currentSearchText);

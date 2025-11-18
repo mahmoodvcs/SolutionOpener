@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Solution_Opener.Models;
 
 namespace Solution_Opener.ViewModels;
@@ -10,10 +10,18 @@ public partial class SolutionItemViewModel : ObservableObject
     [ObservableProperty]
     private bool _isFavorite;
 
-    public SolutionItemViewModel(SolutionInfo solutionInfo, bool isFavorite)
+    [ObservableProperty]
+    private bool _isRecent;
+
+    [ObservableProperty]
+    private string _repositoryName = string.Empty;
+
+    public SolutionItemViewModel(SolutionInfo solutionInfo, bool isFavorite, bool isRecent = false, string repositoryName = "")
     {
         _solutionInfo = solutionInfo;
         _isFavorite = isFavorite;
+        _isRecent = isRecent;
+        _repositoryName = repositoryName;
     }
 
     public string Name => _solutionInfo.Name;
@@ -24,6 +32,16 @@ public partial class SolutionItemViewModel : ObservableObject
 
     public string LastModifiedDisplay => FormatTimeAgo(LastModified);
     public string FileSizeDisplay => FormatFileSize(FileSize);
+    
+    public string StatusIcon 
+    {
+        get
+        {
+            if (_isRecent) return "🕒";
+            if (_isFavorite) return "⭐";
+            return "";
+        }
+    }
 
     private static string FormatTimeAgo(DateTime dateTime)
     {
