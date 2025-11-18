@@ -161,12 +161,20 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand]
     private async Task RefreshCurrentRepositoryAsync()
     {
+        System.Diagnostics.Debug.WriteLine($"RefreshCurrentRepositoryAsync called - SelectedTab: {SelectedTab?.Name ?? "null"}");
+        
         if (SelectedTab == null || SelectedTab.Path == "favorites")
+        {
+            System.Diagnostics.Debug.WriteLine("RefreshCurrentRepositoryAsync: Exiting early");
             return;
+        }
 
         var repo = _configuration.Repositories.FirstOrDefault(r => r.Path == SelectedTab.Path);
         if (repo == null)
+        {
+            System.Diagnostics.Debug.WriteLine("RefreshCurrentRepositoryAsync: repo not found");
             return;
+        }
 
         IsScanning = true;
         StatusBarText = $"Refreshing {repo.Name}...";
@@ -275,8 +283,13 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand]
     private void RemoveRepository(RepositoryTabViewModel? tab)
     {
+        System.Diagnostics.Debug.WriteLine($"RemoveRepository called with tab: {tab?.Name ?? "null"}");
+        
         if (tab == null || tab.Path == "favorites")
+        {
+            System.Diagnostics.Debug.WriteLine("RemoveRepository: Exiting early - tab is null or favorites");
             return;
+        }
 
         var result = MessageBox.Show(
             $"Are you sure you want to remove repository '{tab.Name}'?\n\nThis will not delete any files, only remove it from Solution Opener.",

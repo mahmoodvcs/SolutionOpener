@@ -134,26 +134,27 @@
         </Border>
 
         <!-- Main Content - Tabs -->
-        <TabControl Grid.Row="2" 
+        <TabControl x:Name="MainTabControl"
+                    Grid.Row="2" 
                     Style="{StaticResource ModernTabControlStyle}"
                     ItemsSource="{Binding RepositoryTabs}"
                     SelectedItem="{Binding SelectedTab}"
                     BorderThickness="0"
-                    PreviewKeyDown="TabControl_PreviewKeyDown"
-                    >
+                    PreviewKeyDown="TabControl_PreviewKeyDown">
             
             <TabControl.ItemContainerStyle>
                 <Style TargetType="TabItem" BasedOn="{StaticResource ModernTabItemStyle}">
+                    <Setter Property="Tag" Value="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"/>
                     <Setter Property="ContextMenu">
                         <Setter.Value>
                             <ContextMenu>
                                 <MenuItem Header="🔄 Refresh Repository" 
-                                         Command="{Binding DataContext.RefreshCurrentRepositoryCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                         Command="{Binding Path=PlacementTarget.Tag.RefreshCurrentRepositoryCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                          InputGestureText="F5"/>
                                 <Separator/>
                                 <MenuItem Header="🗑️ Remove Repository"
-                                         Command="{Binding DataContext.RemoveRepositoryCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                         CommandParameter="{Binding}"/>
+                                         Command="{Binding Path=PlacementTarget.Tag.RemoveRepositoryCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                         CommandParameter="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                             </ContextMenu>
                         </Setter.Value>
                     </Setter>
