@@ -13,7 +13,8 @@
         WindowStartupLocation="Manual"
         Loaded="Window_Loaded"
         Closing="Window_Closing"
-        Background="{StaticResource BackgroundBrush}">
+        Background="{StaticResource BackgroundBrush}"
+        PreviewKeyDown="Window_PreviewKeyDown">
     
     <Window.InputBindings>
         <KeyBinding Key="F" Modifiers="Ctrl" Command="ApplicationCommands.Find" />
@@ -138,7 +139,8 @@
                     ItemsSource="{Binding RepositoryTabs}"
                     SelectedItem="{Binding SelectedTab}"
                     BorderThickness="0"
-                    PreviewKeyDown="TabControl_PreviewKeyDown">
+                    PreviewKeyDown="TabControl_PreviewKeyDown"
+                    >
             
             <TabControl.ItemContainerStyle>
                 <Style TargetType="TabItem" BasedOn="{StaticResource ModernTabItemStyle}">

@@ -79,22 +79,30 @@ namespace Solution_Opener
         {
             if (e.Key == Key.Down)
             {
-                // Only handle if the focused element is a TabItem (not already in the grid)
+                var tabControl = sender as TabControl;
+                if (tabControl?.SelectedItem == null)
+                    return;
+
+                // Check if the focused element is within the tab header area (not in the content)
                 var focusedElement = Keyboard.FocusedElement as DependencyObject;
-                var tabItem = FindParent<TabItem>(focusedElement);
                 
-                // If focus is not on a TabItem, don't handle the event (let the grid handle it)
-                if (tabItem == null)
+                // If focused element is null or is already a DataGrid or within a DataGrid, don't handle
+                if (focusedElement == null)
                     return;
                 
-                var tabControl = sender as TabControl;
-                if (tabControl?.SelectedItem != null)
+                // Check if focus is within the DataGrid content area
+                var dataGridParent = FindParent<DataGrid>(focusedElement);
+                if (dataGridParent != null)
+                    return; // Focus is already in the grid, let it handle navigation
+                
+                // Check if focused element is within a TabItem header
+                var tabItem = focusedElement is TabItem ? focusedElement : FindParent<TabItem>(focusedElement);
+                if (tabItem != null)
                 {
-                    // The content is wrapped in a ContentPresenter
+                    // Focus is on tab header, move to grid
                     var contentPresenter = FindVisualChild<ContentPresenter>(tabControl);
                     if (contentPresenter != null)
                     {
-                        // Now find the DataGrid inside the content presenter
                         var dataGrid = FindVisualChild<DataGrid>(contentPresenter);
                         if (dataGrid != null && dataGrid.Items.Count > 0)
                         {
@@ -217,5 +225,25 @@ namespace Solution_Opener
 
             ViewModel.SaveWindowSettings(settings);
         }
-    }
+
+		private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+		{
+			//switch tabs with Ctrl+1 to Ctrl+9
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+            {
+                if (e.Key >= Key.D1 && e.Key <= Key.D9)
+                {
+                    int tabIndex = e.Key - Key.D1;
+                    
+                    // Find the TabControl in the window
+                    var tabControl = FindVisualChild<TabControl>(this);
+                    if (tabControl != null && tabIndex < tabControl.Items.Count)
+                    {
+                        tabControl.SelectedIndex = tabIndex;
+                        e.Handled = true;
+                    }
+                }
+			}
+		}
+	}
 }
