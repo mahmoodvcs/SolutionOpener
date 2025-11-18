@@ -12,7 +12,8 @@
         MinWidth="800"
         WindowStartupLocation="Manual"
         Loaded="Window_Loaded"
-        Closing="Window_Closing">
+        Closing="Window_Closing"
+        Background="{StaticResource BackgroundBrush}">
     
     <Window.InputBindings>
         <KeyBinding Key="F" Modifiers="Ctrl" Command="ApplicationCommands.Find" />
@@ -29,8 +30,9 @@
         </Grid.RowDefinitions>
 
         <!-- Toolbar -->
-        <ToolBar Grid.Row="0">
+        <ToolBar Grid.Row="0" Style="{StaticResource ModernToolBarStyle}">
             <Button Command="{Binding AddRepositoryCommand}" 
+                    Style="{StaticResource ModernButtonStyle}"
                     ToolTip="Add Repository (Ctrl+N)">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="➕" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
@@ -38,9 +40,10 @@
                 </StackPanel>
             </Button>
             
-            <Separator Margin="8,4"/>
+            <Separator Margin="12,4"/>
             
             <Button Command="{Binding RefreshCurrentRepositoryCommand}" 
+                    Style="{StaticResource SecondaryButtonStyle}"
                     IsEnabled="{Binding SelectedTab, Converter={StaticResource NotNullConverter}}"
                     ToolTip="Refresh Current Repository (F5)">
                 <StackPanel Orientation="Horizontal">
@@ -52,8 +55,16 @@
 
         <!-- Search Bar -->
         <Border Grid.Row="1" 
+                Background="White"
                 BorderThickness="0,0,0,1"
-                Padding="20,16">
+                BorderBrush="{StaticResource BorderBrush}"
+                Padding="20,12">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="8" 
+                                ShadowDepth="2" 
+                                Opacity="0.05" 
+                                Color="Black"/>
+            </Border.Effect>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -61,55 +72,75 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" 
-                          Text="🔍" 
-                          FontSize="20"
-                          VerticalAlignment="Center" 
-                          Margin="0,0,12,0"/>
+                <Border Grid.Column="0" 
+                        Background="{StaticResource SelectionBrush}"
+                        CornerRadius="6"
+                        Padding="8"
+                        Margin="0,0,12,0">
+                    <TextBlock Text="🔍" 
+                              FontSize="16"
+                              VerticalAlignment="Center"/>
+                </Border>
                 
-                <TextBox x:Name="SearchTextBox" 
-                         Grid.Column="1" 
-                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                         VerticalAlignment="Center"
-                         PreviewKeyDown="SearchTextBox_PreviewKeyDown">
-                    <TextBox.Resources>
-                        <Style TargetType="TextBox">
-                            <Style.Triggers>
-                                <Trigger Property="Text" Value="">
-                                    <Setter Property="Background">
-                                        <Setter.Value>
-                                            <VisualBrush AlignmentX="Left" AlignmentY="Center" Stretch="None">
-                                                <VisualBrush.Visual>
-                                                    <TextBlock Text="Search solutions by name or path... (Ctrl+F)" 
-                                                             Foreground="Gray" 
-                                                             FontSize="14"
-                                                             Margin="12,0,0,0"/>
-                                                </VisualBrush.Visual>
-                                            </VisualBrush>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Resources>
-                </TextBox>
+                <Grid Grid.Column="1">
+                    <TextBox x:Name="SearchTextBox" 
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                             VerticalAlignment="Center"
+                             Height="36"
+                             Background="White"
+                             Foreground="Black"
+                             FontSize="14"
+                             Padding="12,8"
+                             BorderBrush="#E0E0E0"
+                             BorderThickness="2"
+                             VerticalContentAlignment="Center"
+                             PreviewKeyDown="SearchTextBox_PreviewKeyDown">
+                        <TextBox.Resources>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="CornerRadius" Value="6"/>
+                            </Style>
+                        </TextBox.Resources>
+                    </TextBox>
+                    
+                    <!-- Placeholder Text -->
+                    <TextBlock IsHitTestVisible="False"
+                              Text="Search solutions by name or path... (Ctrl+F)"
+                              Foreground="#B2BEC3"
+                              FontSize="14"
+                              VerticalAlignment="Center"
+                              Margin="14,0,0,0">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=SearchTextBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
                 
                 <Button Grid.Column="2" 
                         Content="✕ Clear" 
+                        Style="{StaticResource SecondaryButtonStyle}"
                         Command="{Binding ClearSearchCommand}"
                         Margin="12,0,0,0"
+                        Height="36"
                         IsEnabled="{Binding SearchText, Converter={StaticResource NotEmptyStringConverter}}"/>
             </Grid>
         </Border>
 
         <!-- Main Content - Tabs -->
         <TabControl Grid.Row="2" 
+                    Style="{StaticResource ModernTabControlStyle}"
                     ItemsSource="{Binding RepositoryTabs}"
                     SelectedItem="{Binding SelectedTab}"
                     BorderThickness="0">
             
             <TabControl.ItemContainerStyle>
-                <Style TargetType="TabItem">
+                <Style TargetType="TabItem" BasedOn="{StaticResource ModernTabItemStyle}">
                     <Setter Property="ContextMenu">
                         <Setter.Value>
                             <ContextMenu>
@@ -128,63 +159,123 @@
             
             <TabControl.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}" FontSize="14"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Border Background="{StaticResource SelectionBrush}"
+                                CornerRadius="4"
+                                Padding="6,2"
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center">
+                            <TextBlock Text="📂" FontSize="12"/>
+                        </Border>
+                        <TextBlock Text="{Binding Name}" 
+                                  FontSize="14" 
+                                  VerticalAlignment="Center"/>
+                    </StackPanel>
                 </DataTemplate>
             </TabControl.ItemTemplate>
             
             <TabControl.ContentTemplate>
                 <DataTemplate>
-                    <Grid>
+                    <Grid Background="White" Margin="0,0,0,0">
                         <!-- Loading Overlay -->
                         <Border Background="#DD000000" 
                                 Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
                                 Panel.ZIndex="1000"
-                                CornerRadius="8"
-                                Margin="20">
+                                CornerRadius="0"
+                                Margin="0">
                             <Border Background="White"
-                                    CornerRadius="12"
-                                    Padding="40"
+                                    CornerRadius="16"
+                                    Padding="48"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center">
                                 <Border.Effect>
-                                    <DropShadowEffect BlurRadius="20" 
-                                                    ShadowDepth="4" 
-                                                    Opacity="0.3" 
-                                                    Color="Black"/>
+                                    <DropShadowEffect BlurRadius="30" 
+                                                    ShadowDepth="8" 
+                                                    Opacity="0.4" 
+                                                    Color="#6C5CE7"/>
                                 </Border.Effect>
                                 <StackPanel>
-                                    <TextBlock Text="⏳" 
-                                              FontSize="48" 
-                                              HorizontalAlignment="Center"
-                                              Margin="0,0,0,16"/>
+                                    <Viewbox Width="64" Height="64" Margin="0,0,0,20">
+                                        <Canvas Width="100" Height="100">
+                                            <Ellipse Width="100" Height="100" Stroke="{StaticResource SelectionBrush}" StrokeThickness="8" Fill="Transparent"/>
+                                            <Ellipse Width="100" Height="100" Stroke="{StaticResource PrimaryBrush}" StrokeThickness="8" 
+                                                    Fill="Transparent" StrokeDashArray="60 40">
+                                                <Ellipse.RenderTransform>
+                                                    <RotateTransform x:Name="SpinnerRotate" CenterX="50" CenterY="50"/>
+                                                </Ellipse.RenderTransform>
+                                                <Ellipse.Triggers>
+                                                    <EventTrigger RoutedEvent="Loaded">
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation Storyboard.TargetName="SpinnerRotate"
+                                                                               Storyboard.TargetProperty="Angle"
+                                                                               From="0"
+                                                                               To="360"
+                                                                               Duration="0:0:1.5"
+                                                                               RepeatBehavior="Forever"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                </Ellipse.Triggers>
+                                            </Ellipse>
+                                        </Canvas>
+                                    </Viewbox>
                                     <TextBlock Text="Scanning Repository..." 
-                                              FontSize="18" 
+                                              FontSize="20" 
                                               FontWeight="SemiBold"
+                                              Foreground="{StaticResource TextPrimaryBrush}"
                                               HorizontalAlignment="Center"
                                               Margin="0,0,0,8"/>
                                     <TextBlock Text="{Binding StatusText}" 
                                               FontSize="14"
-                                              HorizontalAlignment="Center"/>
+                                              Foreground="{StaticResource TextSecondaryBrush}"
+                                              HorizontalAlignment="Center"
+                                              Margin="0,0,0,24"/>
                                     <ProgressBar IsIndeterminate="True"
                                                 Height="4"
-                                                Margin="0,16,0,0"
-                                                MinWidth="200"/>
+                                                Foreground="{StaticResource PrimaryBrush}"
+                                                Background="{StaticResource SelectionBrush}"
+                                                BorderThickness="0"
+                                                MinWidth="250"/>
                                 </StackPanel>
                             </Border>
                         </Border>
 
                         <!-- Solutions List -->
                         <DataGrid ItemsSource="{Binding FilteredSolutions}"
+                                  Margin="20"
                                   CanUserSortColumns="True"
-                                  Margin="0"
                                   AutoGenerateColumns="False"
                                   CanUserResizeRows="False"
                                   SelectionMode="Single"
                                   SelectionUnit="FullRow"
-                                  GridLinesVisibility="None"
+                                  GridLinesVisibility="Horizontal"
                                   HeadersVisibility="Column"
-                                  RowHeight="40">
+                                  RowHeight="32">
                             
+                            <DataGrid.Style>
+                                <Style TargetType="DataGrid" BasedOn="{StaticResource ModernDataGridStyle}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding FilteredSolutions.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGrid.Style>
+
+                            <DataGrid.RowStyle>
+                                <Style TargetType="DataGridRow" BasedOn="{StaticResource ModernDataGridRowStyle}">
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                </Style>
+                            </DataGrid.RowStyle>
+                            
+                            <DataGrid.Effect>
+                                <DropShadowEffect BlurRadius="20" 
+                                                ShadowDepth="4" 
+                                                Opacity="0.08" 
+                                                Color="Black"/>
+                            </DataGrid.Effect>
+
                             <DataGrid.InputBindings>
                                 <MouseBinding Gesture="LeftDoubleClick" 
                                             Command="{Binding DataContext.OpenSolutionCommand, RelativeSource={RelativeSource AncestorType=Window}}"
@@ -193,16 +284,6 @@
                                           Command="{Binding DataContext.OpenSolutionCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                           CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=SelectedItem}"/>
                             </DataGrid.InputBindings>
-
-                            <DataGrid.Style>
-                                <Style TargetType="DataGrid">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding FilteredSolutions.Count}" Value="0">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </DataGrid.Style>
 
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
@@ -237,11 +318,11 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="" 
                                                    Binding="{Binding IsFavorite, Converter={StaticResource BoolToStarConverter}}"
-                                                   Width="40"
+                                                   Width="50"
                                                    CanUserSort="True">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
-                                            <Setter Property="FontSize" Value="16"/>
+                                            <Setter Property="FontSize" Value="18"/>
                                             <Setter Property="HorizontalAlignment" Value="Center"/>
                                         </Style>
                                     </DataGridTextColumn.ElementStyle>
@@ -254,6 +335,8 @@
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="FontWeight" Value="SemiBold"/>
+                                            <Setter Property="FontSize" Value="14"/>
+                                            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
                                         </Style>
                                     </DataGridTextColumn.ElementStyle>
                                 </DataGridTextColumn>
@@ -266,6 +349,7 @@
                                         <Style TargetType="TextBlock">
                                             <Setter Property="FontFamily" Value="Consolas"/>
                                             <Setter Property="FontSize" Value="13"/>
+                                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
                                         </Style>
                                     </DataGridTextColumn.ElementStyle>
                                 </DataGridTextColumn>
@@ -273,46 +357,57 @@
                                 <DataGridTextColumn Header="Modified" 
                                                    Binding="{Binding LastModifiedDisplay}" 
                                                    Width="1*"
-                                                   CanUserSort="True"/>
+                                                   CanUserSort="True">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
                                 
                                 <DataGridTextColumn Header="Size" 
                                                    Binding="{Binding FileSizeDisplay}" 
-                                                   Width="90"
+                                                   Width="100"
                                                    CanUserSort="True">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="HorizontalAlignment" Value="Right"/>
+                                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
                                         </Style>
                                     </DataGridTextColumn.ElementStyle>
                                 </DataGridTextColumn>
                             </DataGrid.Columns>
-
-                            <DataGrid.RowStyle>
-                                <Style TargetType="DataGridRow">
-                                    <Setter Property="Cursor" Value="Hand"/>
-                                </Style>
-                            </DataGrid.RowStyle>
                         </DataGrid>
 
                         <!-- Empty State -->
                         <StackPanel HorizontalAlignment="Center" 
                                    VerticalAlignment="Center"
                                    Visibility="{Binding FilteredSolutions.Count, Converter={StaticResource ZeroToVisibilityConverter}}">
-                            <Viewbox Width="120" Height="120" Margin="0,0,0,24">
+                            <Viewbox Width="140" Height="140" Margin="0,0,0,32">
                                 <Canvas Width="100" Height="100">
-                                    <Ellipse Width="100" Height="100" Fill="LightGray"/>
+                                    <Ellipse Width="100" Height="100">
+                                        <Ellipse.Fill>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="#EDE7F6" Offset="0"/>
+                                                <GradientStop Color="#F3E5F5" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Ellipse.Fill>
+                                    </Ellipse>
                                     <TextBlock Text="📁" FontSize="48" Canvas.Left="26" Canvas.Top="20"/>
                                 </Canvas>
                             </Viewbox>
                             
                             <TextBlock Text="No solutions found" 
-                                      FontSize="24" 
+                                      FontSize="26" 
                                       FontWeight="SemiBold"
+                                      Foreground="{StaticResource TextPrimaryBrush}"
                                       HorizontalAlignment="Center"
-                                      Margin="0,0,0,8"/>
+                                      Margin="0,0,0,12"/>
                             
+
                             <TextBlock HorizontalAlignment="Center" 
-                                      FontSize="14">
+                                      FontSize="15"
+                                      Foreground="{StaticResource TextSecondaryBrush}">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Text" Value="Try adjusting your search terms or clear the search"/>
@@ -331,25 +426,38 @@
         </TabControl>
 
         <!-- Status Bar -->
-        <StatusBar Grid.Row="3">
+        <StatusBar Grid.Row="3" Style="{StaticResource ModernStatusBarStyle}">
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="💼" FontSize="14" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding StatusBarText}" VerticalAlignment="Center"/>
+                    <Border Background="{StaticResource SelectionBrush}"
+                            CornerRadius="6"
+                            Padding="8,4"
+                            Margin="0,0,12,0">
+                        <TextBlock Text="💼" FontSize="14" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="{Binding StatusBarText}" 
+                              VerticalAlignment="Center"
+                              Foreground="{StaticResource TextPrimaryBrush}"/>
                 </StackPanel>
             </StatusBarItem>
             
             <StatusBarItem HorizontalAlignment="Right">
                 <StackPanel Orientation="Horizontal">
-                    <Border CornerRadius="10"
-                            Padding="8,4"
-                            Background="LightBlue"
+                    <Border CornerRadius="12"
+                            Padding="12,6"
                             Visibility="{Binding IsScanning, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#E8F5E9" Offset="0"/>
+                                <GradientStop Color="#C8E6C9" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="⏳" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="⏳" FontSize="13" Margin="0,0,8,0" VerticalAlignment="Center"/>
                             <TextBlock Text="Scanning..." 
                                       FontWeight="SemiBold"
-                                      FontSize="12"
+                                      FontSize="13"
+                                      Foreground="{StaticResource SuccessBrush}"
                                       VerticalAlignment="Center"/>
                         </StackPanel>
                     </Border>
