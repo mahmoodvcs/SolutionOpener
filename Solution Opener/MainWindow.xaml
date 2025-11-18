@@ -246,7 +246,8 @@
                         </Border>
 
                         <!-- Solutions List -->
-                        <DataGrid ItemsSource="{Binding FilteredSolutions}"
+                        <DataGrid x:Name="SolutionsDataGrid"
+                                  ItemsSource="{Binding FilteredSolutions}"
                                   Margin="20"
                                   CanUserSortColumns="True"
                                   AutoGenerateColumns="False"
@@ -256,7 +257,8 @@
                                   GridLinesVisibility="Horizontal"
                                   HeadersVisibility="Column"
                                   RowHeight="32"
-                                  IsReadOnly="True">
+                                  IsReadOnly="True"
+                                  Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
                             
                             <DataGrid.Style>
                                 <Style TargetType="DataGrid" BasedOn="{StaticResource ModernDataGridStyle}">
@@ -293,18 +295,18 @@
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="🚀 Open Solution" 
-                                             Command="{Binding DataContext.OpenSolutionCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                             Command="{Binding Path=PlacementTarget.Tag.OpenSolutionCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                              CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                              FontWeight="SemiBold"/>
                                     <Separator/>
                                     <MenuItem Header="📁 Open in Explorer" 
-                                             Command="{Binding DataContext.OpenInExplorerCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                             Command="{Binding Path=PlacementTarget.Tag.OpenInExplorerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                              CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                     <MenuItem Header="📋 Copy Path" 
-                                             Command="{Binding DataContext.CopyPathCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                             Command="{Binding Path=PlacementTarget.Tag.CopyPathCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                              CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                     <Separator/>
-                                    <MenuItem Command="{Binding DataContext.ToggleFavoriteCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    <MenuItem Command="{Binding Path=PlacementTarget.Tag.ToggleFavoriteCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                              CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                         <MenuItem.Style>
                                             <Style TargetType="MenuItem">
