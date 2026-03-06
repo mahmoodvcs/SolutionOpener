@@ -336,7 +336,7 @@
                                         </Style>
                                     </DataGridTextColumn.ElementStyle>
                                 </DataGridTextColumn>
-                                
+
                                 <!-- Repository Column - Only visible in Quick Access tab -->
                                 <DataGridTextColumn Header="Repository" 
                                                    Binding="{Binding RepositoryName}" 
@@ -349,10 +349,23 @@
                                         </Style>
                                     </DataGridTextColumn.ElementStyle>
                                 </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Type"
+                                                    Binding="{Binding Type}"
+                                                    Width="120"
+                                                    CanUserSort="True">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontSize" Value="13"/>
+                                            <Setter Property="FontWeight" Value="Medium"/>
+                                            <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
                                 
                                 <DataGridTextColumn Header="Solution Name" 
                                                    Binding="{Binding Name}" 
-                                                   Width="2.5*"
+                                                    Width="2.5*"
                                                    CanUserSort="True">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">

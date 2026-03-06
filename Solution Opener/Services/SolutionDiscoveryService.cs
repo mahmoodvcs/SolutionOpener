@@ -10,58 +10,90 @@ public class SolutionDiscoveryService
         return await Task.Run(() => DiscoverSolutions(repositoryPath, progress));
     }
 
-    private List<SolutionInfo> DiscoverSolutions(string repositoryPath, IProgress<int>? progress = null)
+    public List<SolutionInfo> DiscoverSolutions(string repositoryPath, IProgress<int>? progress = null)
     {
         var solutions = new List<SolutionInfo>();
+        var discoveredGitRepositories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var directoriesToScan = new Stack<string>();
 
         if (!Directory.Exists(repositoryPath))
         {
             return solutions;
         }
 
+        directoriesToScan.Push(repositoryPath);
+
         try
         {
-            var solutionFiles = Directory.GetFiles(repositoryPath, "*.sln", SearchOption.AllDirectories);
-            var totalFiles = solutionFiles.Length;
-
-            for (int i = 0; i < solutionFiles.Length; i++)
+            while (directoriesToScan.Count > 0)
             {
-                var filePath = solutionFiles[i];
-                
+                var directoryPath = directoriesToScan.Pop();
+
                 try
                 {
-                    var fileInfo = new FileInfo(filePath);
-                    var relativePath = Path.GetRelativePath(repositoryPath, filePath);
+                    var gitMarkerPath = Path.Combine(directoryPath, ".git");
+                    var hasGitMarker = Directory.Exists(gitMarkerPath) || File.Exists(gitMarkerPath);
 
-                    solutions.Add(new SolutionInfo
+                    if (hasGitMarker && discoveredGitRepositories.Add(directoryPath))
                     {
-                        Name = Path.GetFileNameWithoutExtension(filePath),
-                        FullPath = filePath,
-                        RelativePath = relativePath,
-                        LastModified = fileInfo.LastWriteTime,
-                        FileSize = fileInfo.Length,
-                        IsFavorite = false
-                    });
+                        var directoryInfo = new DirectoryInfo(directoryPath);
+                        var relativePath = Path.GetRelativePath(repositoryPath, directoryPath);
 
-                    // Report progress
-                    if (progress != null && totalFiles > 0)
+                        solutions.Add(new SolutionInfo
+                        {
+                            Name = directoryInfo.Name,
+                            FullPath = directoryPath,
+                            RelativePath = relativePath,
+                            Type = ProjectType.GitRepository,
+                            LastModified = directoryInfo.LastWriteTime,
+                            FileSize = 0,
+                            IsFavorite = false
+                        });
+                    }
+
+                    foreach (var filePath in Directory.GetFiles(directoryPath, "*.sln", SearchOption.TopDirectoryOnly))
                     {
-                        var percentComplete = (int)((i + 1) * 100.0 / totalFiles);
-                        progress.Report(percentComplete);
+                        var fileInfo = new FileInfo(filePath);
+                        var relativePath = Path.GetRelativePath(repositoryPath, filePath);
+
+                        solutions.Add(new SolutionInfo
+                        {
+                            Name = Path.GetFileNameWithoutExtension(filePath),
+                            FullPath = filePath,
+                            RelativePath = relativePath,
+                            Type = ProjectType.Solution,
+                            LastModified = fileInfo.LastWriteTime,
+                            FileSize = fileInfo.Length,
+                            IsFavorite = false
+                        });
+                    }
+
+                    foreach (var childDirectory in Directory.GetDirectories(directoryPath, "*", SearchOption.TopDirectoryOnly))
+                    {
+                        if (Path.GetFileName(childDirectory).Equals(".git", StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
+
+                        directoriesToScan.Push(childDirectory);
                     }
                 }
                 catch (Exception ex)
                 {
-                    // Skip files that can't be accessed
-                    System.Diagnostics.Debug.WriteLine($"Error processing {filePath}: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"Error processing {directoryPath}: {ex.Message}");
                 }
             }
+
+            progress?.Report(100);
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error discovering solutions in {repositoryPath}: {ex.Message}");
         }
 
-        return solutions;
+        return solutions
+            .OrderBy(s => s.Type)
+            .ThenBy(s => s.Name, StringComparer.OrdinalIgnoreCase)
+            .ToList();
     }
 }

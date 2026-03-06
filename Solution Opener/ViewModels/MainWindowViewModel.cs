@@ -201,7 +201,7 @@ public partial class MainWindowViewModel : ObservableObject
 
         try
         {
-            _launcherService.OpenSolution(solution.FullPath);
+            _launcherService.OpenWithDefault(solution.SolutionInfo);
             _recentService.AddRecentSolution(solution.FullPath, _configuration);
             
             // Refresh Quick Access tab to show the newly opened solution
@@ -211,7 +211,7 @@ public partial class MainWindowViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error opening solution: {ex.Message}", "Error", 
+            MessageBox.Show($"Error opening project: {ex.Message}", "Error", 
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -349,22 +349,18 @@ public partial class MainWindowViewModel : ObservableObject
             }
 
             // Get recent solutions (up to 10 most recent) with repository names
-            var recentSolutions = _configuration.RecentSolutionPaths
-                .Take(10)
-                .Select(path =>
+            var recentSolutions = new List<(SolutionInfo solution, string repoName)>();
+            foreach (var path in _configuration.RecentSolutionPaths.Take(10))
+            {
+                var solution = _configuration.Repositories
+                    .SelectMany(r => r.Solutions)
+                    .FirstOrDefault(s => s.FullPath == path);
+
+                if (solution != null && solutionToRepo.TryGetValue(path, out var repoName))
                 {
-                    var solution = _configuration.Repositories
-                        .SelectMany(r => r.Solutions)
-                        .FirstOrDefault(s => s.FullPath == path);
-                    
-                    if (solution != null && solutionToRepo.TryGetValue(path, out var repoName))
-                    {
-                        return (solution, repoName);
-                    }
-                    return (solution: null, repoName: string.Empty);
-                })
-                .Where(x => x.solution != null)
-                .ToList();
+                    recentSolutions.Add((solution, repoName));
+                }
+            }
 
             // Get favorite solutions with repository names
             var favoriteSolutions = _configuration.Repositories
@@ -374,7 +370,7 @@ public partial class MainWindowViewModel : ObservableObject
                 .ToList();
 
             quickAccessTab.UpdateQuickAccessSolutions(
-                recentSolutions.Select(x => (x.solution!, x.repoName)).ToList(),
+                recentSolutions,
                 favoriteSolutions,
                 _configuration.FavoriteSolutionPaths);
             quickAccessTab.ApplyFilter(SearchText);

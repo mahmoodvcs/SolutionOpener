@@ -25,10 +25,17 @@ public partial class SolutionItemViewModel : ObservableObject
     }
 
     public string Name => _solutionInfo.Name;
+    public string Type => _solutionInfo.Type switch
+    {
+        ProjectType.Solution => ".sln",
+        ProjectType.GitRepository => ".git",
+        _ => _solutionInfo.Type.ToString()
+    };
     public string FullPath => _solutionInfo.FullPath;
     public string RelativePath => _solutionInfo.RelativePath;
     public DateTime LastModified => _solutionInfo.LastModified;
     public long FileSize => _solutionInfo.FileSize;
+    public SolutionInfo SolutionInfo => _solutionInfo;
 
     public string LastModifiedDisplay => FormatTimeAgo(LastModified);
     public string FileSizeDisplay => FormatFileSize(FileSize);

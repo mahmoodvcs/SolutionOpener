@@ -1,10 +1,26 @@
 using System.Diagnostics;
 using System.IO;
+using Solution_Opener.Models;
 
 namespace Solution_Opener.Services;
 
 public class SolutionLauncherService
 {
+    public void OpenWithDefault(SolutionInfo project)
+    {
+        switch (project.Type)
+        {
+            case ProjectType.Solution:
+                OpenSolution(project.FullPath);
+                break;
+            case ProjectType.GitRepository:
+                OpenGitRepository(project.FullPath);
+                break;
+            default:
+                throw new InvalidOperationException($"Unknown project type: {project.Type}");
+        }
+    }
+
     public void OpenSolution(string solutionPath)
     {
         if (!File.Exists(solutionPath))
@@ -23,6 +39,28 @@ public class SolutionLauncherService
         catch (Exception ex)
         {
             throw new InvalidOperationException($"Failed to open solution: {ex.Message}", ex);
+        }
+    }
+
+    public void OpenGitRepository(string repositoryPath)
+    {
+        if (!Directory.Exists(repositoryPath))
+        {
+            throw new DirectoryNotFoundException("Repository directory not found", new DirectoryNotFoundException(repositoryPath));
+        }
+
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "code",
+                Arguments = $"\"{repositoryPath}\"",
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Failed to open VS Code: {ex.Message}. Make sure VS Code is installed and added to PATH.", ex);
         }
     }
 
