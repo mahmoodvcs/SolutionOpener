@@ -231,7 +231,7 @@ A: No, duplicates are prevented.
 A: Remove old path and add new one.
 
 **Q: Does this work with Rider or VS Code?**  
-A: Yes. `.code-workspace` and git repos open in VS Code by default; `.sln` opens in Visual Studio by default.
+A: Yes. `.sln` opens with your system default solution handler (Visual Studio, Rider, etc.), while `.code-workspace` and git repos open in VS Code by default.
 
 **Q: How many solutions can it handle?**  
 A: Tested with 1000+ solutions per repository with instant search.

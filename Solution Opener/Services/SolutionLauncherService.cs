@@ -11,7 +11,7 @@ public class SolutionLauncherService
         switch (project.Type)
         {
             case ProjectType.Solution:
-                OpenVisualStudio(project.FullPath);
+                OpenSystemDefault(project.FullPath);
                 break;
             case ProjectType.CodeWorkspace:
                 OpenVsCode(project.FullPath);
@@ -21,6 +21,27 @@ public class SolutionLauncherService
                 break;
             default:
                 throw new InvalidOperationException($"Unknown project type: {project.Type}");
+        }
+    }
+
+    public void OpenSystemDefault(string path)
+    {
+        if (!Directory.Exists(path) && !File.Exists(path))
+        {
+            throw new FileNotFoundException("Path not found", path);
+        }
+
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = path,
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Failed to open with default app: {ex.Message}", ex);
         }
     }
 
