@@ -14,7 +14,7 @@ public class SolutionLauncherService
                 OpenSolution(project.FullPath);
                 break;
             case ProjectType.GitRepository:
-                OpenGitRepository(project.FullPath);
+                OpenVsCode(project.FullPath);
                 break;
             default:
                 throw new InvalidOperationException($"Unknown project type: {project.Type}");
@@ -42,7 +42,7 @@ public class SolutionLauncherService
         }
     }
 
-    public void OpenGitRepository(string repositoryPath)
+    public void OpenVsCode(string repositoryPath)
     {
         if (!Directory.Exists(repositoryPath))
         {
