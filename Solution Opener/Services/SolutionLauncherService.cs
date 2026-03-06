@@ -11,6 +11,7 @@ public class SolutionLauncherService
         switch (project.Type)
         {
             case ProjectType.Solution:
+            case ProjectType.SolutionX:
                 OpenSystemDefault(project.FullPath);
                 break;
             case ProjectType.CodeWorkspace:
