@@ -371,7 +371,7 @@
                                 
                                 <DataGridTextColumn Header="Solution Name" 
                                                    Binding="{Binding Name}" 
-                                                    Width="2.5*"
+                                                   Width="2.5*"
                                                    CanUserSort="True">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
