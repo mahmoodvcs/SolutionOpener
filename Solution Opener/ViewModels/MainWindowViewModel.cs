@@ -234,6 +234,46 @@ public partial class MainWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void OpenInVisualStudio(SolutionItemViewModel? solution)
+    {
+        if (solution == null)
+            return;
+
+        try
+        {
+            _launcherService.OpenVisualStudio(solution.FullPath);
+            _recentService.AddRecentSolution(solution.FullPath, _configuration);
+            RefreshQuickAccessTab();
+            StatusBarText = $"Opened {solution.Name} in Visual Studio";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error opening Visual Studio: {ex.Message}", "Error",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    [RelayCommand]
+    private void OpenInVsCode(SolutionItemViewModel? solution)
+    {
+        if (solution == null)
+            return;
+
+        try
+        {
+            _launcherService.OpenVsCode(solution.FullPath);
+            _recentService.AddRecentSolution(solution.FullPath, _configuration);
+            RefreshQuickAccessTab();
+            StatusBarText = $"Opened {solution.Name} in VS Code";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error opening VS Code: {ex.Message}", "Error",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    [RelayCommand]
     private void CopyPath(SolutionItemViewModel? solution)
     {
         if (solution == null)

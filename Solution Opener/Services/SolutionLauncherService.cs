@@ -11,7 +11,7 @@ public class SolutionLauncherService
         switch (project.Type)
         {
             case ProjectType.Solution:
-                OpenSolution(project.FullPath);
+                OpenVisualStudio(project.FullPath);
                 break;
             case ProjectType.GitRepository:
                 OpenVsCode(project.FullPath);
@@ -21,32 +21,33 @@ public class SolutionLauncherService
         }
     }
 
-    public void OpenSolution(string solutionPath)
+    public void OpenVisualStudio(string path)
     {
-        if (!File.Exists(solutionPath))
+        if (!Directory.Exists(path) && !File.Exists(path))
         {
-            throw new FileNotFoundException("Solution file not found", solutionPath);
+            throw new FileNotFoundException("Path not found", path);
         }
 
         try
         {
             Process.Start(new ProcessStartInfo
             {
-                FileName = solutionPath,
+                FileName = "devenv",
+                Arguments = $"\"{path}\"",
                 UseShellExecute = true
             });
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException($"Failed to open solution: {ex.Message}", ex);
+            throw new InvalidOperationException($"Failed to open Visual Studio: {ex.Message}. Make sure Visual Studio is installed and available in PATH.", ex);
         }
     }
 
-    public void OpenVsCode(string repositoryPath)
+    public void OpenVsCode(string path)
     {
-        if (!Directory.Exists(repositoryPath))
+        if (!Directory.Exists(path) && !File.Exists(path))
         {
-            throw new DirectoryNotFoundException("Repository directory not found", new DirectoryNotFoundException(repositoryPath));
+            throw new FileNotFoundException("Path not found", path);
         }
 
         try
@@ -54,7 +55,7 @@ public class SolutionLauncherService
             Process.Start(new ProcessStartInfo
             {
                 FileName = "code",
-                Arguments = $"\"{repositoryPath}\"",
+                Arguments = $"\"{path}\"",
                 UseShellExecute = true
             });
         }

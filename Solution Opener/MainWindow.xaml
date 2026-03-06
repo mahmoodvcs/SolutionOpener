@@ -296,11 +296,17 @@
 
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="🚀 Open Solution" 
+                                    <MenuItem Header="🚀 Open (Default)" 
                                              Command="{Binding Path=PlacementTarget.Tag.OpenSolutionCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                              CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                              FontWeight="SemiBold"/>
                                     <Separator/>
+                                    <MenuItem Header="🟣 Open in Visual Studio"
+                                             Command="{Binding Path=PlacementTarget.Tag.OpenInVisualStudioCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                             CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    <MenuItem Header="🧭 Open in VS Code"
+                                             Command="{Binding Path=PlacementTarget.Tag.OpenInVsCodeCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                             CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                     <MenuItem Header="📁 Open in Explorer" 
                                              Command="{Binding Path=PlacementTarget.Tag.OpenInExplorerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                              CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
@@ -352,7 +358,7 @@
 
                                 <DataGridTextColumn Header="Type"
                                                     Binding="{Binding Type}"
-                                                    Width="120"
+                                                    Width="60"
                                                     CanUserSort="True">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
