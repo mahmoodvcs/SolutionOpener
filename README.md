@@ -1,6 +1,6 @@
 ﻿# Solution Opener
 
-**Instantly find and open Visual Studio solutions across multiple repository clones.**
+**Instantly find and open .sln files, VS Code workspaces, and git repos across multiple repository clones.**
 
 A productivity-focused WPF application that eliminates time wasted navigating folder structures. Search thousands of solutions in milliseconds and get back to coding in under 5 seconds.
 
@@ -138,7 +138,9 @@ The **Quick Access** tab combines both recent and favorite solutions in one conv
 ## 🖱️ Context Menu
 
 **Right-click on Solutions:**
-- **Open Solution** - Opens in Visual Studio
+- **Open (Default)** - Opens by type (Visual Studio for `.sln`, VS Code for `.code-workspace` and git repos)
+- **Open in Visual Studio** - Explicitly opens in Visual Studio
+- **Open in VS Code** - Explicitly opens in VS Code
 - **Open in Explorer** - Opens the folder
 - **Copy Path** - Copies full path to clipboard
 - **Add/Remove Favorites** - Toggle favorite status
@@ -229,7 +231,7 @@ A: No, duplicates are prevented.
 A: Remove old path and add new one.
 
 **Q: Does this work with Rider or VS Code?**  
-A: Yes, uses the default .sln handler.
+A: Yes. `.code-workspace` and git repos open in VS Code by default; `.sln` opens in Visual Studio by default.
 
 **Q: How many solutions can it handle?**  
 A: Tested with 1000+ solutions per repository with instant search.

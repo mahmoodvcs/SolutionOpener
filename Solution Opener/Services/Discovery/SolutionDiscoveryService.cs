@@ -14,6 +14,7 @@ public class SolutionDiscoveryService
         _strategies =
         [
             new SolutionFileDiscoveryStrategy(),
+            new CodeWorkspaceDiscoveryStrategy(),
             new GitRepositoryDiscoveryStrategy()
         ];
     }

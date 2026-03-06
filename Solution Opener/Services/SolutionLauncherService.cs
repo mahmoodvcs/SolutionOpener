@@ -13,6 +13,9 @@ public class SolutionLauncherService
             case ProjectType.Solution:
                 OpenVisualStudio(project.FullPath);
                 break;
+            case ProjectType.CodeWorkspace:
+                OpenVsCode(project.FullPath);
+                break;
             case ProjectType.GitRepository:
                 OpenVsCode(project.FullPath);
                 break;

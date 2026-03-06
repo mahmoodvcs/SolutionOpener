@@ -28,6 +28,7 @@ public partial class SolutionItemViewModel : ObservableObject
     public string Type => _solutionInfo.Type switch
     {
         ProjectType.Solution => ".sln",
+        ProjectType.CodeWorkspace => "workspace",
         ProjectType.GitRepository => ".git",
         _ => _solutionInfo.Type.ToString()
     };
