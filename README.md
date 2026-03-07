@@ -1,6 +1,6 @@
 ﻿# Solution Opener
 
-**Instantly find and open Visual Studio solutions across multiple repository clones.**
+**Instantly find and open .sln/.slnx files, VS Code workspaces, and git repos across multiple repository clones.**
 
 A productivity-focused WPF application that eliminates time wasted navigating folder structures. Search thousands of solutions in milliseconds and get back to coding in under 5 seconds.
 
@@ -46,7 +46,7 @@ A productivity-focused WPF application that eliminates time wasted navigating fo
 1. Press `Ctrl+F` to focus search
 2. Type a few letters of your solution name
 3. Press `Enter` to open
-4. Visual Studio launches with your solution
+4. The selected item opens with its default launcher
 
 **⏱️ Time saved**: ~30 seconds per launch
 
@@ -138,7 +138,12 @@ The **Quick Access** tab combines both recent and favorite solutions in one conv
 ## 🖱️ Context Menu
 
 **Right-click on Solutions:**
-- **Open Solution** - Opens in Visual Studio
+- **Open (Default)** - Opens by type:
+  - `.sln` / `.slnx` → system default solution handler (Visual Studio, Rider, etc.)
+  - `.code-workspace` → VS Code
+  - `.git` repository folder → VS Code
+- **Open in Visual Studio** - Explicitly opens in Visual Studio
+- **Open in VS Code** - Explicitly opens in VS Code
 - **Open in Explorer** - Opens the folder
 - **Copy Path** - Copies full path to clipboard
 - **Add/Remove Favorites** - Toggle favorite status
@@ -201,13 +206,13 @@ Each gets its own tab. Switch between branches without git checkout.
 ## 🔧 Troubleshooting
 
 **No solutions found:**
-- Verify .sln files exist
+- Verify `.sln` or `.slnx` files exist
 - Check folder permissions
 - Press `F5` to refresh
 
 **Solutions won't open:**
 - Verify Visual Studio is installed
-- Check .sln file association
+- Check `.sln`/`.slnx` file association
 
 **Lost configuration:**
 - Check `config.json.bak` for backup
@@ -226,10 +231,10 @@ Each gets its own tab. Switch between branches without git checkout.
 A: No, duplicates are prevented.
 
 **Q: What happens if I move a repository folder?**  
-A: Remove old path and add new one.
+A: Repository paths are cached as absolute paths in `config.json`, so moved folders are treated as new locations. Remove the old repository entry and add the new path.
 
 **Q: Does this work with Rider or VS Code?**  
-A: Yes, uses the default .sln handler.
+A: Yes. `.sln` and `.slnx` open with your system default solution handler (Visual Studio, Rider, etc.), while `.code-workspace` and git repos open in VS Code by default.
 
 **Q: How many solutions can it handle?**  
 A: Tested with 1000+ solutions per repository with instant search.

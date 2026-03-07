@@ -296,11 +296,17 @@
 
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="🚀 Open Solution" 
+                                    <MenuItem Header="🚀 Open (Default)" 
                                              Command="{Binding Path=PlacementTarget.Tag.OpenSolutionCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                              CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                              FontWeight="SemiBold"/>
                                     <Separator/>
+                                    <MenuItem Header="🟣 Open in Visual Studio"
+                                             Command="{Binding Path=PlacementTarget.Tag.OpenInVisualStudioCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                             CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    <MenuItem Header="🧭 Open in VS Code"
+                                             Command="{Binding Path=PlacementTarget.Tag.OpenInVsCodeCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                             CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                     <MenuItem Header="📁 Open in Explorer" 
                                              Command="{Binding Path=PlacementTarget.Tag.OpenInExplorerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                              CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
@@ -336,11 +342,24 @@
                                         </Style>
                                     </DataGridTextColumn.ElementStyle>
                                 </DataGridTextColumn>
-                                
+
                                 <!-- Repository Column - Only visible in Quick Access tab -->
                                 <DataGridTextColumn Header="Repository" 
                                                    Binding="{Binding RepositoryName}" 
                                                    CanUserSort="True">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontSize" Value="13"/>
+                                            <Setter Property="FontWeight" Value="Medium"/>
+                                            <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Type"
+                                                    Binding="{Binding Type}"
+                                                    Width="100"
+                                                    CanUserSort="True">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="FontSize" Value="13"/>

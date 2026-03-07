@@ -1,28 +1,92 @@
 using System.Diagnostics;
 using System.IO;
+using Solution_Opener.Models;
 
 namespace Solution_Opener.Services;
 
 public class SolutionLauncherService
 {
-    public void OpenSolution(string solutionPath)
+    public void OpenWithDefault(SolutionInfo project)
     {
-        if (!File.Exists(solutionPath))
+        switch (project.Type)
         {
-            throw new FileNotFoundException("Solution file not found", solutionPath);
+            case ProjectType.Solution:
+            case ProjectType.SolutionX:
+                OpenSystemDefault(project.FullPath);
+                break;
+            case ProjectType.CodeWorkspace:
+                OpenVsCode(project.FullPath);
+                break;
+            case ProjectType.GitRepository:
+                OpenVsCode(project.FullPath);
+                break;
+            default:
+                throw new InvalidOperationException($"Unknown project type: {project.Type}");
+        }
+    }
+
+    public void OpenSystemDefault(string path)
+    {
+        if (!Directory.Exists(path) && !File.Exists(path))
+        {
+            throw new FileNotFoundException("Path not found", path);
         }
 
         try
         {
             Process.Start(new ProcessStartInfo
             {
-                FileName = solutionPath,
+                FileName = path,
                 UseShellExecute = true
             });
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException($"Failed to open solution: {ex.Message}", ex);
+            throw new InvalidOperationException($"Failed to open with default app: {ex.Message}", ex);
+        }
+    }
+
+    public void OpenVisualStudio(string path)
+    {
+        if (!Directory.Exists(path) && !File.Exists(path))
+        {
+            throw new FileNotFoundException("Path not found", path);
+        }
+
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "devenv",
+                Arguments = $"\"{path}\"",
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Failed to open Visual Studio: {ex.Message}. Make sure Visual Studio is installed and available in PATH.", ex);
+        }
+    }
+
+    public void OpenVsCode(string path)
+    {
+        if (!Directory.Exists(path) && !File.Exists(path))
+        {
+            throw new FileNotFoundException("Path not found", path);
+        }
+
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "code",
+                Arguments = $"\"{path}\"",
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Failed to open VS Code: {ex.Message}. Make sure VS Code is installed and added to PATH.", ex);
         }
     }
 
